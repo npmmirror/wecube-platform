@@ -18,7 +18,7 @@
         </Select>
       </div>
       <div class="item">
-        <Button type="primary" @click="getUserScheduledTasks"> {{ $t('query') }}</Button>
+        <Button type="primary" @click="search"> {{ $t('query') }}</Button>
         <Button @click="setTimedExecution"> {{ $t('full_word_add') }}</Button>
         <Button @click="exportData"> {{ $t('export') }}</Button>
       </div>
@@ -46,9 +46,31 @@
       <Form :label-width="100" label-colon>
         <FormItem :label="$t('flow_name')">
           <Select v-model="timeConfig.params.selectedFlowInstance" style="width:95%">
-            <Option v-for="item in timeConfig.allFlowInstances" :key="item.id" :value="item.id">{{
+            <!-- <Option v-for="item in timeConfig.allFlowInstances" :key="item.id" :value="item.id">{{
               item.procInstName
-            }}</Option>
+            }}</Option> -->
+            <Option
+              v-for="item in timeConfig.allFlowInstances"
+              :value="item.id"
+              :key="item.id"
+              :label="
+                item.procInstName +
+                  ' ' +
+                  item.entityDisplayName +
+                  ' ' +
+                  (item.createdTime || '0000-00-00 00:00:00') +
+                  ' ' +
+                  (item.operator || 'operator')
+              "
+            >
+              <span>
+                <span style="color:#2b85e4">{{ item.procInstName + ' ' }}</span>
+                <span style="color:#515a6e">{{ item.entityDisplayName + ' ' }}</span>
+                <span style="color:#ccc;padding-left:8px;float:right">{{ item.status }}</span>
+                <span style="color:#ccc;float:right">{{ (item.createdTime || '0000-00-00 00:00:00') + ' ' }}</span>
+                <span style="float:right;color:#515a6e;margin-right:20px">{{ item.operator || 'operator' }}</span>
+              </span>
+            </Option>
           </Select>
         </FormItem>
         <FormItem :label="$t('timing_type')">
@@ -99,6 +121,7 @@
 </template>
 
 <script>
+import lodash from 'lodash'
 import {
   getUserScheduledTasks,
   deleteUserScheduledTasks,
@@ -466,6 +489,16 @@ export default {
         onCancel: () => {}
       })
     },
+    search: lodash.debounce(
+      function () {
+        this.getUserScheduledTasks()
+      },
+      1000,
+      {
+        leading: true,
+        trailing: false
+      }
+    ),
     async getUserScheduledTasks () {
       let params = JSON.parse(JSON.stringify(this.searchConfig.params))
       const keys = Object.keys(params)
