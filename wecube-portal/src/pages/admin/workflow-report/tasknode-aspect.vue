@@ -217,6 +217,12 @@ export default {
     async getReport () {
       const { status, data } = await getTasknodesReport(this.searchConfig.params)
       if (status === 'OK') {
+        if (data.contents.length === 0) {
+          this.$Notice.info({
+            title: 'Info',
+            desc: 'No Data'
+          })
+        }
         this.tableData = data.contents
       }
     },

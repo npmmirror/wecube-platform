@@ -187,6 +187,12 @@ export default {
       this.searchConfig.params.sorting = {}
       const { status, data } = await getPluginReport(this.searchConfig.params)
       if (status === 'OK') {
+        if (data.contents.length === 0) {
+          this.$Notice.info({
+            title: 'Info',
+            desc: 'No Data'
+          })
+        }
         this.tableData = data.contents
         this.totalRows = data.pageInfo.totalRows
       }

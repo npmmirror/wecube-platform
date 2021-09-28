@@ -112,6 +112,12 @@ export default {
     async getFlowExecuteOverviews () {
       const { status, data } = await getFlowExecuteOverviews(this.searchConfig.params)
       if (status === 'OK') {
+        if (data.length === 0) {
+          this.$Notice.info({
+            title: 'Info',
+            desc: 'No Data'
+          })
+        }
         this.tableData = data
       }
     },
