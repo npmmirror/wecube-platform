@@ -4,7 +4,6 @@
 */dist/
 *.log
 *.log.*.gz
-*/package-lock.json
 */node/
 bin/
 
